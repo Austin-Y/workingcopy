@@ -1,0 +1,374 @@
+{*** 상단레이아웃 | outline/_header.php ***}
+<!DOCTYPE html>
+<head>
+<meta name="description" content="{_meta_title}" />
+<meta name="keywords" content="{_meta_keywords}" />
+<meta http-equiv="Content-Type" content="text/html; charset=euc-kr" />
+<meta name="viewport" content="user-scalable=yes, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+<title>{_meta_title}</title>
+
+<script src="../common/js/common.js"></script>
+<script src="../common/js/goods_list_action.js"></script>
+<script src="../common/js/jquery-1.4.2.min.js"></script>
+<script src="../common/js/jquery.mobile-1.1.1.js"></script>
+<script src="../common/js/jquery.cookie.js"></script>
+<script src="../common/js/l2-common.js"></script>
+
+
+<!--{ @ mobile_script }-->
+<script src="{.script_file}"></script>
+<!--{ / }-->
+
+<script type="text/javascript">
+function showSearchArea() {
+	if($(".search-area").is(':hidden') == true) {
+
+		$(".search-area").slideDown(30);
+	}
+	else {
+
+		$(".search-area").slideUp(0);
+	}
+}
+
+function showCateArea() {
+
+	var now_cate = $("[name=now_cate]").val();
+
+	if($("#cate-area").is(':hidden') == true) {
+		$("#page_title").hide();
+		$(".content").hide();
+		$(".content_goods").hide();
+		//$("body").addClass('back_bg');
+		$("#cate-area").slideDown(30);
+		getCategoryData(now_cate);
+	}
+	else {
+		$("#cate-area").hide();
+		//$("body").removeClass('back_bg');
+		$("#page_title").show();
+		$(".content").show();
+
+	}
+}
+
+function goHome() {
+	document.location.href="/" + getMobileHomepath() + "/index.php";
+}
+
+function goMenu(page_nm) {
+	switch(page_nm) {
+		case "my" :
+			document.location.href="/" + getMobileHomepath() + "/myp/menu_list.php";
+			break;
+		case "cart" :
+			document.location.href="/" + getMobileHomepath() + "/goods/cart.php";
+			break;
+		case "wish" :
+			document.location.href="/" + getMobileHomepath() + "/myp/wishlist.php";
+			break;
+		case "login" :
+			document.location.href="/" + getMobileHomepath() + "/mem/login.php";
+			break;
+		case "logout" :
+				document.location.href="/" + getMobileHomepath() + "/mem/logout.php";
+			break;
+		case "viewgoods" :
+				document.location.href="/" + getMobileHomepath() + "/myp/viewgoods.php";
+			break;
+	}
+}
+
+function searchKw() {
+	if($("[name=search_key]").val()) {
+		document.location.href="/" + getMobileHomepath() + "/goods/list.php?kw=" + $("[name=search_key]").val();
+	}
+	else {
+		alert("검색 키워드를 입력해 주시기 바랍니다");
+		return;
+	}
+}
+
+function getMobileHomepath() {
+	//각 URL 최상위 홈PATH를 구한다. 모바일의 홈이 여러 종류일수 있으므로  2012-09-20 khs
+	var path1 = document.location.pathname;
+
+	if (path1.charAt(0) == '/')	{
+		path1 = path1.substring(1);
+	}
+	var x = path1.split("/");
+
+	return x[0];
+}
+
+function showCategoryMsg(message) {
+
+	var sec = 1000;
+
+	$("[id=goodsres-hide] .text_msg").text(message);
+	$("[id=goodsres-hide]").fadeIn(300);
+
+	setTimeout( function() {
+		$("[id=goodsres-hide]").fadeOut(300);
+	}, sec);
+}
+
+$(document).ready(function(){
+	$.ajax({
+		"url" : "{_mobileRootDir}/proc/mAjaxAction.php",
+		"type" : "post",
+		"data" : {
+			"mode" : "get_cart_item"
+		},
+		"cash" : false,
+		"dataType" : "json",
+		"success" : function(cartItem)
+		{
+			if (cartItem.quantity) {
+				$("#cart-btn .cart-item-quantity").text(" ("+cartItem.quantity.toString()+")");
+			}
+		}
+	});
+
+	try {
+		var todayGoodsMobileIdx = $.cookie('todayGoodsMobileIdx');
+
+		if(todayGoodsMobileIdx != "undefined" && todayGoodsMobileIdx != "") {
+
+			var goods_idx = todayGoodsMobileIdx.split(',');
+			var view_cnt = goods_idx.length - 1;
+			$("#viewgoods-btn .viewgoods-quantity").text(" ("+view_cnt.toString()+")");
+		}
+	}
+	catch(e) {}
+
+
+
+});
+
+</script>
+<link rel="stylesheet" type="text/css" href="../common/css/reset.css" />
+<link rel="stylesheet" type="text/css" href="../common/css/style.css" />
+<link rel="stylesheet" type="text/css" href="../common/css/attendance.css" />
+<style type="text/css">
+.cart-item-quantity{font-weight:normal;}
+.viewgoods-quantity{font-weight:normal;}
+
+#goodsres-hide2 {display:none;}
+.goodsres_wrap {position : fixed;left : 10%;width : 80%;background : #ffffff;display : block;border-radius:1em;box-shadow:2px 2px 4px #7f7f7f;z-index: 1000; bottom:20%;}
+.goodsres_wrap .goodsres_title {background:#313030;width:100%;border-top-left-radius:1em;border-top-right-radius:1em;height:45px;border-bottom:solid 1px #b2b2b2;margin-bottom:6px;}
+.goodsres_wrap .goodsres_title .title{padding-left:14px;line-height:45px;font-size:16px;font-weight:bold;color:#FFFFFF;font-family:dotum;}
+.goodsres_wrap .goodsres_msg { padding:15px; }
+.goodsres_wrap .goodsres_msg .text_msg{ font-size:12px; color:#353535;}
+
+/* BASIC css start */
+/* =============================================================================
+   상단 header.html
+   ========================================================================== */
+div, ul, ol, li, dl, dt, dd, p, span, h1, h2, h3, h4, h5, h6 {margin:0;padding:0;}
+ul, ol, li {list-style:none;}
+.aft {*zoom:1;}
+.aft:after { clear:both; content:""; display:block;}
+#header-container {margin:0px; padding:0px;}
+#header-container2{position:relative; z-index:10}
+#header-container2 .top_navi { background:url(/design/bikeline/mobile/bg_top.gif) repeat-x left top; background-size:1px 27px; height:24px; line-height:24px; padding-bottom:3px; margin:0px;}
+#header-container2 .top_navi ul { list-style:none; margin:0px; padding:0px;}
+#header-container2 .top_navi li { float:left; background:url(/design/bikeline/mobile/icon_1.gif) no-repeat left center; background-size:3px 8px; text-align:center; height:23.5px; line-height:23.5px; color:#636363; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .8em;}
+#header-container2 .top_navi li a {color:#636363; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .65em; display:block; width:100%; height:23.5px; line-height:23.5px; margin:0px; padding:0px;}
+#header-container2 .top_navi li.login { background:none; width:15%;}
+#header-container2 .top_navi li.join { width:16.5625%; padding-left:0.9375%;}
+#header-container2 .top_navi li.cart { width:15.625%; padding-left:0.9375%;}
+#header-container2 .top_navi li.cs { width:15.78125%; padding-left:0.9375%;}
+#header-container2 .top_navi li.commu { width:15.78125%; padding-left:0.9375%;}
+#header-container2 .top_navi li.order { width:16.5625%; padding-left:0.9375%;}
+#header-container2 .top_navi ul li a span { color: #fff; font-size: smaller; background: url(/images/d3/m_01/bull/number_ico.png) no-repeat 0 50%; background-size: 21px 21px; text-align: center; width: 21px; height: 100%; display: inline-block; }
+#header-container2 .wrapper { min-height: 46px; margin:0px; padding:12px 0 20px 0; text-align:center;}
+#header-container2 h1 { font-size: 1em; float: left; }
+#header-container2 #logo { width:55%; text-align:center; margin:0px auto 0px 22.5%; padding:0px; }
+#header-container2 #logo img { width:176px; height:46px; margin:0px auto;}
+/* 홈|장바구니|관심상품|로그인 */
+#header-container .menus { border-top: 2px #2da8f4 solid; border-bottom:2px #2da8f4 solid; background:#1587ca; height:23.5px; line-height:23.5px;}
+#header-container .menus ul { margin:3px 3.125% 3px 3.75%; padding:0px; height:17.5px; line-height:17.5px;}
+#header-container .menus ul li { float: left; background-size: 21.5px 17.5px; height: 17.5px; line-height: 17.5px; text-align:left; padding:0px 0px 0px 0px; color:#ffffff; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .8em;}
+#header-container .menus ul li a {display:block; width:100%; height:17.5px; line-height:17.5px; color:#ffffff; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .8em;}
+#header-container .menus ul li.cate { width:19%; padding-left:7.5%; background:url(/design/bikeline/mobile/icon_cate.gif) no-repeat left center; background-size: 21.5px 17.5px;}
+#header-container .menus ul li.search { width:19%; padding-left:7.5%; background:url(/design/bikeline/mobile/icon_search.gif) no-repeat left center; background-size: 21.5px 17.5px;}
+#header-container .menus ul li.event { width:15%; padding-left:7.5%; background:url(/design/bikeline/mobile/icon_event.gif) no-repeat left center; background-size: 21.5px 17.5px;}
+#header-container .menus ul li.mypage { width:17%; padding-left:7.5%; background:url(/design/bikeline/mobile/icon_my.gif) no-repeat left center; background-size: 21.5px 17.5px;}
+#header-container .catelist { background:url(/design/bikeline/mobile/bg_menu.gif) repeat-x left top; background-size:1px 50.5px; padding:6.5px 0px 4px 0px; margin:0px;}
+#header-container .catelist ul li { background:url(/design/bikeline/mobile/icon_line.gif) no-repeat right center; background-size:1px 8.5px;}
+#header-container .catelist ul.line1 { margin:0px 11%; padding:0px; height:20px; line-height:20px; list-style:none; }/*232 22 / 72.5  6.875*/
+#header-container .catelist ul.line2 { margin:0px 3%; padding:0px; height:20px; line-height:20px; list-style:none; }/*282 9.5 / 88.125  2.96875*/
+#header-container .catelist ul.line1 li { padding:0px 7.7%; height:20px; line-height:20px; text-align:center; color:#000; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .675em; font-weight:bold; float:left;}/*18.5 / 7.974137931 / 5.78125 */
+#header-container .catelist ul.line2 li { padding:0px 4%; height:20px; line-height:20px; text-align:center; color:#000; font-family: 'Nanum Gothic', Arial, Helvetica, Dotum, sans-serif; font-size: .675em; font-weight:bold; float:left;}/*12 / 4.255319148 / 3.75 */
+#header-container .catelist ul.line1 li.line1_1 {width:13.5%;}/*30.5 / 13.146551724 / 9.53125*/
+#header-container .catelist ul.line1 li.line1_2 {width:22.5%;}/*52.5 / 22.629310344 / 16.40625*/
+#header-container .catelist ul.line1 li.line1_3 {width:19%; padding:0px 0px 0px 7.7%;}/*44 / 18.965517241 / 13.75*/
+#header-container .catelist ul.line2 li.line2_1 {width:26.5%;}/*80.5 / 28.54609929 / 25.15625*/
+#header-container .catelist ul.line2 li.line2_2 {width:26%;}/*76 / 26.950354609 / 23.75*/
+#header-container .catelist ul.line2 li.line2_3 {width:22%; padding:0px 0px 0px 4%;}/*53.5 / 18.971631205 / 16.71875*/
+#header-container .catelist ul.line1 li:last-child,
+#header-container .catelist ul.line2 li:last-child { background:none;}
+/* BASIC css end */
+
+#siteNew-wrap{overflow:hidden; position:relative}
+#siteNew-wrap #siteNew-sec{background:#fff; position:relative; left:0; top:0; z-index:1}
+#siteNew-wrap #siteNew-page{width:100%; background:none repeat scroll 0 0 #fff}
+
+
+
+
+
+#logoAreaM9 {width : 30%;}
+#searchInputAreaM9 {width : 60%; position: absolute; margin-left: 35%; margin-top: 20px;}
+#searchInputM9 {border-top: 0px; border-bottom: 2px solid gray; border-left: 0px; border-right: 0px;}
+#searchBtnAreaM9 {width : 30%;}
+
+
+
+
+</style>
+<!--<link rel="stylesheet" href="../style_screen.css" type="text/css" media="screen and (min-width: 321px)"  />-->
+
+<!--{ ? _cfgMobileShop.mobileShopIcon }--><link rel="apple-touch-icon-precomposed" href="{_cfg.rootDir}/data/skin_mobileV2/{_cfgMobileShop.tplSkinMobile}/{_cfgMobileShop.mobileShopIcon}" /><!--{ / }-->
+
+{=customHeader}
+</head>
+
+<body>
+
+<div id="dynamic"></div>
+<!--div id="wrap"-->
+<div id="siteNew-wrap">
+	<div id="siteNew-sec">
+		<div id="siteNew-page">
+			<!-- / 상단영역 시작 / -->
+            <header>
+            <div class="gnb">
+                <div id="logo" id="logoAreaM9">
+                    <!--{ ? _cfgMobileShop.mobileShopLogo}-->
+                    <a href="{_mobileRootDir}"><img src="/shop/data/skin_mobileV2/default_C/img/2015img/logo.jpg" alt="{_cfg.shopName}" title="{_cfg.shopName}" width="148px" height="30px"/></a>
+                    <!--{ : }-->
+                    <div class="top_title">{_meta_title}</div>
+                    <!--{ / }-->
+                </div>
+                <div id="searchInputAreaM9">
+                  <input type="text" id="searchInputM9" name="search_key" placeholder="검색어를 입력해 주세요"/>
+                </div>
+				        <div id="search-btn" id="searchBtnAreaM9" onclick="javascript:searchKw();">
+                  <img src="/shop/data/skin_mobileV2/default_C/img/2015img/icon_search.gif" width="60px" height="32px" />
+                  <img src="/shop/data/skin_mobileV2/default_C/img/2015img/icon_search.gif" width="60px" height="32px" />
+                </div>
+            </div>
+
+
+
+            <!-- <div class="search-area">
+                <div id="search-box">
+                    <input type="text" name="search_key" placeholder="검색어를 입력해 주세요"/>
+                </div>
+                <div id="search-box-btn"><img src="/shop/data/skin_mobileV2/default_C/img/2015img/btn_search_ok.gif" onclick="javascript:searchKw();" /></div>
+            </div> -->
+            <div class="menu-area">
+                <div id="category-btn">
+                    <a href="#" id="newCate">카테고리</a>
+                </div>
+                <div id="my-btn">
+					<a href="/m2/goods/event.php?mevent_no=36">베스트</a>
+                </div>
+                <div id="wish-btn">
+                    <a href="/m2/html.php?htmid=proc/mobile_event.htm&tplSkinMobile=default_C">이벤트</a>
+                </div>
+                <div id="login-btn">
+                    <a href="/m2/html.php?htmid=proc/company01.htm&tplSkinMobile=default_C">회사소개</a>
+                </div>
+            </div>
+            </header>
+
+<section id="cate-area">
+	<div class="top_title"><div class="title">카테고리</div></div>
+	<div class="top_path"><div class='now_path'><div class='pathitem activeitem allpath' onClick='javascript:cateSelect("");'>전체카테고리</div></div></div>
+	<div class="now_cate">
+
+		<input type="hidden" name="now_cate" value="{=now_cate}" />
+	</div>
+	<div class="cate_path">
+	</div>
+	<div class="cate_list">
+	</div>
+
+</section>
+<div class="clearb"></div>
+
+<section id="goodsres-hide" class="content_goods">
+	<div class="pop_back">
+		<div class="pop_effect">
+			<div class="text_msg"></div>
+		</div>
+	</div>
+</section>
+
+<section id="goodsres-hide2" class="content_goods">
+	<div class="goodsres_wrap">
+		<div class="goodsres_title"><div class="title">알림</div></div>
+		<div class="goodsres_msg"><div class="text_msg"></div></div>
+	</div>
+</section>
+
+<!-- Start : 출석체크 템플릿 -->
+<section id="attendance-popup" style="display: none;" data-root-dir="{_cfgMobileShop.mobileShopRootDir}">
+	<h1 id="attendance-title"></h1>
+	<div id="attendance-close">닫기</div>
+	<div id="attendance-info-straight" class="condition-type">
+		<div class="attendance-period">
+			<span class="attendance-start-date"></span> ~ <span class="attendance-end-date"></span> 까지
+		</div>
+		<div class="attendance-description">
+			연속 <span class="attendance-condition-period"></span>일 이상 출석하면 적립금이 차곡차곡!
+		</div>
+	</div>
+	<div id="attendance-info-sum" class="condition-type">
+		<div class="attendance-period">
+			기간 : <span class="attendance-start-date"></span> ~ <span class="attendance-end-date"></span> 안에
+		</div>
+		<div class="attendance-description">
+			<span class="attendance-condition-period"></span>일 이상 출석하면 적립금이 차곡차곡!
+		</div>
+	</div>
+	<h2 id="attendance-calendar-title">
+		<button id="attendance-calendar-previous-month">이전 달</button>
+		<span id="attendance-calendar-month">
+			<span id="attendance-calendar-month-1">January</span>
+			<span id="attendance-calendar-month-2">February</span>
+			<span id="attendance-calendar-month-3">March</span>
+			<span id="attendance-calendar-month-4">April</span>
+			<span id="attendance-calendar-month-5">May</span>
+			<span id="attendance-calendar-month-6">June</span>
+			<span id="attendance-calendar-month-7">July</span>
+			<span id="attendance-calendar-month-8">August</span>
+			<span id="attendance-calendar-month-9">September</span>
+			<span id="attendance-calendar-month-10">October</span>
+			<span id="attendance-calendar-month-11">November</span>
+			<span id="attendance-calendar-month-12">December</span>
+		</span>
+		<span id="attendance-calendar-year"></span>
+		<button id="attendance-calendar-next-month">다음 달</button>
+	</h2>
+	<table id="attendance-date-list">
+		<tbody>
+			<tr class="attendance-calendar-date-floor">
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+				<td class="attendance-calendar-date-space"></td>
+			</tr>
+		</tbody>
+	</table>
+</section>
+<!-- End : 출석체크 템플릿 -->
